@@ -1,6 +1,6 @@
 
 exports.up = function (knex, Promise) {
-  return knex.schema.createTable('workload_points', function (table) {
+  return knex.schema.createTableIfNotExists('workload_points', function (table) {
     table.increments('id')
     table.integer('comm_tier_1').unsigned().notNullable()
     table.integer('comm_tier_2').unsigned().notNullable()

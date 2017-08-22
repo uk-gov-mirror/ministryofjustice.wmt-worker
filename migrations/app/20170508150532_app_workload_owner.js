@@ -1,6 +1,6 @@
 
 exports.up = function (knex, Promise) {
-  return knex.schema.createTable('workload_owner', function (table) {
+  return knex.schema.createTableIfNotExists('workload_owner', function (table) {
     table.increments('id')
     table.integer('offender_manager_id').unsigned().notNullable().references('offender_manager.id')
     table.decimal('contracted_hours').unsigned()

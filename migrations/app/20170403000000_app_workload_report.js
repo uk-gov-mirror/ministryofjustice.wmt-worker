@@ -1,6 +1,6 @@
 
 exports.up = function (knex, Promise) {
-  return knex.schema.createTable('workload_report', function (table) {
+  return knex.schema.createTableIfNotExists('workload_report', function (table) {
     table.increments('id')
     table.timestamp('effective_from').defaultTo(knex.fn.now())
     table.timestamp('effective_to')
