@@ -1,5 +1,5 @@
 exports.up = function (knex, Promise) {
-  return knex.schema.createTable('reduction_reason', function (table) {
+  return knex.schema.createTableIfNotExists('reduction_reason', function (table) {
     table.increments('id')
     table.string('reason')
     table.string('reason_short_name')

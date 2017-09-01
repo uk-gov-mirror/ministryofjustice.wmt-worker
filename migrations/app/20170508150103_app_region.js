@@ -1,6 +1,6 @@
 
 exports.up = function (knex, Promise) {
-  return knex.schema.createTable('region', function (table) {
+  return knex.schema.createTableIfNotExists('region', function (table) {
     table.increments('id')
     table.string('code')
     table.string('description')

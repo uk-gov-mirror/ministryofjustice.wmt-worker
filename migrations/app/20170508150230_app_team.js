@@ -1,6 +1,6 @@
 
 exports.up = function (knex, Promise) {
-  return knex.schema.createTable('team', function (table) {
+  return knex.schema.createTableIfNotExists('team', function (table) {
     table.increments('id')
     table.string('code')
     table.integer('ldu_id').unsigned().notNullable().references('ldu.id')

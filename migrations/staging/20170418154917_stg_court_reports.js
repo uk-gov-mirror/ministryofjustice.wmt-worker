@@ -1,6 +1,6 @@
 
 exports.up = function (knex, Promise) {
-  return knex.schema.withSchema('staging').createTable('court_reports', function (table) {
+  return knex.schema.withSchema('staging').createTableIfNotExists('court_reports', function (table) {
     table.increments('id')
     table.string('team_desc')
     table.string('team_code')

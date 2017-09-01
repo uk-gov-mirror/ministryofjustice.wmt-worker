@@ -1,5 +1,5 @@
 exports.up = function (knex, Promise) {
-  return knex.schema.createTable('reduction_category', function (table) {
+  return knex.schema.createTableIfNotExists('reduction_category', function (table) {
     table.increments('id')
     table.string('category')
   })

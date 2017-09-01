@@ -1,5 +1,5 @@
 exports.up = function (knex, Promise) {
-  return knex.schema.createTable('reductions', function (table) {
+  return knex.schema.createTableIfNotExists('reductions', function (table) {
     table.increments('id')
     table.integer('reduction_reason_id').unsigned().defaultTo(11).notNullable().references('reduction_reason.id')
     table.integer('workload_owner_id').unsigned().notNullable().references('workload_owner.id')

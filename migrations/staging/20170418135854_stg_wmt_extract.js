@@ -1,6 +1,6 @@
 
 exports.up = function (knex, Promise) {
-  return knex.schema.withSchema('staging').createTable('wmt_extract', function (table) {
+  return knex.schema.withSchema('staging').createTableIfNotExists('wmt_extract', function (table) {
     table.increments('id')
     table.string('trust')
     table.string('region_desc')
