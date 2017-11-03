@@ -59,6 +59,18 @@ module.exports = {
     },
     debug: false
   },
+  archive: {
+    client: 'mssql',
+    connection: Object.assign({}, defaultConnection, {
+      user: config.ARCHIVE_DATABASE_USERNAME,
+      password: config.ARCHIVE_DATABASE_PASSWORD,
+      database: config.ARCHIVE_DATABASE
+    }),
+    seeds: {
+      directory: 'seed/archive-views'
+    },
+    debug: false
+  },
   views: {
     client: 'mssql',
     connection: Object.assign({}, defaultConnection, {

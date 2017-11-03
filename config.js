@@ -14,6 +14,11 @@ module.exports = {
   DB_APP_SCHEMA: 'app',
   DB_STG_SCHEMA: 'staging',
 
+  // Archive DB
+  ARCHIVE_DATABASE: process.env.WMT_ARCHIVE_DB_NAME || 'wmt_db',
+  ARCHIVE_DATABASE_USERNAME: process.env.WMT_DB_USERNAME || 'wmt',
+  ARCHIVE_DATABASE_PASSWORD: process.env.WMT_DB_PASSWORD || 'wmt',
+
   // Migration
   MIGRATION_APP_DATABASE_USERNAME: process.env.WMT_MIGRATION_APP_DATABASE_USERNAME || 'wmt_app',
   MIGRATION_APP_DATABASE_PASSWORD: process.env.WMT_MIGRATION_APP_DATABASE_PASSWORD || 'wmt_app',

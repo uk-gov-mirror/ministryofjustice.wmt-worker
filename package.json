@@ -13,6 +13,7 @@
     "test-all": "yarn test && yarn test-integration",
     "test": "yarn unit-test && yarn integration-test",
     "create-views": "knex seed:run --env views",
+    "create-archive-views": "knex seed:run --env archive",
     "migrate-app": "node ./delete-views.js && knex migrate:latest --env app; yarn create-views",
     "seed-dev": "knex seed:run --env dev",
     "seed-ref": "knex seed:run --env app",
