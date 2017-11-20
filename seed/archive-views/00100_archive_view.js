@@ -23,7 +23,11 @@ exports.seed = function (knex, Promise) {
       w.TotalPoints, w.NominalTarget, w.ContractedHoursPerWeek, w.hoursReduction, n.HoursReduced, n.Notes;`
 
   // TODO: Index
+  //var index = 'CREATE UNIQUE CLUSTERED INDEX idx_national_case_overview on app.national_case_overview (link_id)'
 
   return knex.schema
+    .raw('DROP VIEW IF EXISTS dbo.archive_view;')
+    .raw('SET ARITHABORT ON')
     .raw(view)
+    //.raw(index)
 }
