@@ -2,7 +2,7 @@ exports.seed = function (knex, Promise) {
   var view = `CREATE VIEW archive_view
     WITH SCHEMABINDING 
     AS 
-    SELECT
+    SELECT TOP 100
       om.UniqueIdentifier AS unique_identifier
     , ouLdu.Name AS ldu_name
     , ouTeam.Name AS team_name
@@ -22,8 +22,8 @@ exports.seed = function (knex, Promise) {
       GROUP BY om.UniqueIdentifier, ouLdu.Name, ouTeam.Name, CONCAT(om.Forename, \' \', om.Surname), w.TotalCases, 
       w.TotalPoints, w.NominalTarget, w.ContractedHoursPerWeek, w.hoursReduction, n.HoursReduced, n.Notes;`
 
-  // TODO: Index
-  //var index = 'CREATE UNIQUE CLUSTERED INDEX idx_national_case_overview on app.national_case_overview (link_id)'
+      // cannot index with outer join 
+      //var index = 'CREATE UNIQUE CLUSTERED INDEX idx_archive_view on dbo.archive_view (unique_identifier)'
 
   return knex.schema
     .raw('DROP VIEW IF EXISTS dbo.archive_view;')

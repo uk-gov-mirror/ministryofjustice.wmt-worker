@@ -64,7 +64,10 @@ module.exports = {
     connection: Object.assign({}, defaultConnection, {
       user: config.ARCHIVE_DATABASE_USERNAME,
       password: config.ARCHIVE_DATABASE_PASSWORD,
-      database: config.ARCHIVE_DATABASE
+      database: config.ARCHIVE_DATABASE,
+      options: {
+        requestTimeout: 60000
+      }
     }),
     seeds: {
       directory: 'seed/archive-views'
