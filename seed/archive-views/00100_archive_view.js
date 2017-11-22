@@ -14,13 +14,14 @@ exports.seed = function (knex, Promise) {
     , w.hoursReduction AS hours_reduction
     , n.HoursReduced AS reduction
     , n.Notes AS comments
+    , om.OffenderManagerTypeId AS om_type_id
     FROM dbo.OffenderManager om
       LEFT JOIN dbo.Note n ON om.Id = n.OffenderManagerId
       JOIN dbo.Workload w ON om.Id = w.OffenderManagerId
       JOIN dbo.OrganisationalUnit ouTeam ON w.TeamId = ouTeam.Id 
       JOIN dbo.OrganisationalUnit ouLdu ON w.LduId = ouLdu.Id
       GROUP BY om.UniqueIdentifier, ouLdu.Name, ouTeam.Name, CONCAT(om.Forename, \' \', om.Surname), w.TotalCases, 
-      w.TotalPoints, w.NominalTarget, w.ContractedHoursPerWeek, w.hoursReduction, n.HoursReduced, n.Notes;`
+      w.TotalPoints, w.NominalTarget, w.ContractedHoursPerWeek, w.hoursReduction, n.HoursReduced, n.Notes, om.OffenderManagerTypeId;`
 
   var view2 = `SELECT 
       om.UniqueIdentifier AS unique_identifier
@@ -34,7 +35,7 @@ exports.seed = function (knex, Promise) {
       , w.hoursReduction AS hours_reduction
       , n.HoursReduced AS reduction
       , n.Notes AS comments
-      FROM dbo.OffenderManager om, dbo.Note n
+      FROM dbo.OffenderManager om ---, dbo.Note n
       JOIN dbo.Workload w ON om.Id = w.OffenderManagerId
       JOIN dbo.OrganisationalUnit ouTeam ON w.TeamId = ouTeam.Id 
       JOIN dbo.OrganisationalUnit ouLdu ON w.LduId = ouLdu.Id
@@ -53,6 +54,9 @@ exports.seed = function (knex, Promise) {
       , null
       , null
       FROM dbo.OffenderManager om
+      JOIN dbo.Workload w ON om.Id = w.OffenderManagerId
+      JOIN dbo.OrganisationalUnit ouTeam ON w.TeamId = ouTeam.Id 
+      JOIN dbo.OrganisationalUnit ouLdu ON w.LduId = ouLdu.Id
       WHERE om.Id NOT IN (SELECT OffenderManagerId FROM dbo.Note)`
 
       // cannot index with outer join 
