@@ -5,7 +5,8 @@ const defaultConnection = {
   password: config.DATABASE_PASSWORD,
   database: config.DATABASE,
   options: {
-    encrypt: true
+    encrypt: true,
+    requestTimeout: 60000
   }
 }
 
@@ -66,6 +67,7 @@ module.exports = {
       password: config.ARCHIVE_DATABASE_PASSWORD,
       database: config.ARCHIVE_DATABASE,
       options: {
+        encrypt: true,
         requestTimeout: 60000
       }
     }),
