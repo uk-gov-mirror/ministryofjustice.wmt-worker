@@ -9,6 +9,9 @@ exports.seed = function (knex, Promise) {
     , CONCAT(om.Forename, \' \', om.Surname) AS om_name
     , w.TotalCases AS total_cases
     , w.TotalPoints AS total_points
+    , w.SDRPoints AS sdr_points
+    , w.SDRConversionPoints AS sdr_conversion_points
+    , w.PAROMSPoints AS paroms_points
     , w.NominalTarget AS nominal_target
     , w.ContractedHoursPerWeek AS contracted_hours 
     , w.hoursReduction AS hours_reduction
@@ -21,7 +24,8 @@ exports.seed = function (knex, Promise) {
       JOIN dbo.OrganisationalUnit ouTeam ON w.TeamId = ouTeam.Id 
       JOIN dbo.OrganisationalUnit ouLdu ON w.LduId = ouLdu.Id
       GROUP BY om.UniqueIdentifier, ouLdu.Name, ouTeam.Name, CONCAT(om.Forename, \' \', om.Surname), w.TotalCases, 
-      w.TotalPoints, w.NominalTarget, w.ContractedHoursPerWeek, w.hoursReduction, n.HoursReduced, n.Notes, om.OffenderManagerTypeId;`
+      w.TotalPoints, w.SDRPoints, w.SDRConversionPoints, w.PAROMSPoints, w.NominalTarget, 
+      w.ContractedHoursPerWeek, w.hoursReduction, n.HoursReduced, n.Notes, om.OffenderManagerTypeId;`
 
   var view2 = `SELECT 
       om.UniqueIdentifier AS unique_identifier
