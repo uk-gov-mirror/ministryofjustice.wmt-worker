@@ -20,18 +20,13 @@ exports.seed = function(knex, Promise) {
     , COUNT_BIG(*) AS count
     FROM dbo.OffenderManager om
     JOIN dbo.Workload w ON om.Id = w.OffenderManagerId
-    JOIN dbo.OrganisationalUnit ouTeam ON w.TeamId = ouTeam.Id 
+    JOIN dbo.OrganisationalUnit ouTeam ON w.TeamId = ouTeam.Id
     JOIN dbo.OrganisationalUnit ouLdu ON w.LduId = ouLdu.Id
     GROUP BY om.Id, om.UniqueIdentifier, om.OffenderManagerTypeId, ouTeam.Name, ouLdu.Name,
-    om.Forename, om.Surname, w.NominalTarget`
-
-    /**
-     * GROUP BY om.Id, om.UniqueIdentifier, om.OffenderManagerTypeId, ouTeam.Name, ouLdu.Name,
-    om.Forename, om.Surname, w.ContractedHoursPerWeek, w.NominalTarget
-     */
+    om.Forename, om.Surname, w.ContractedHoursPerWeek, w.NominalTarget`
 
     var index = `CREATE UNIQUE CLUSTERED INDEX idx_offender_managers_archive_view
-    ON dbo.offender_managers_archive_view(om_id, ldu_name, team_name)`
+    ON dbo.offender_managers_archive_view(om_id, team_name)`
 
     return knex.schema
     .raw('DROP VIEW IF EXISTS dbo.archive_data_view;')
