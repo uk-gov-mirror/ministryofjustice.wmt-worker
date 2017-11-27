@@ -29,12 +29,12 @@ exports.seed = function (knex, promise) {
   WHERE wr.effective_from IS NOT NULL
     AND wr.effective_to IS NULL;`
 
-  var index = `CREATE UNIQUE CLUSTERED INDEX idx_individual_case_overview
-  ON app.individual_case_overview (workload_owner_id)`
+  //var index = `CREATE UNIQUE CLUSTERED INDEX idx_individual_case_overview
+  //ON app.individual_case_overview (workload_owner_id)`
 
   return knex.schema
     .raw('DROP VIEW IF EXISTS app.individual_case_overview;')
     .raw('SET ARITHABORT ON')
     .raw(view)
-    .raw(index)
+    //.raw(index)
 }
