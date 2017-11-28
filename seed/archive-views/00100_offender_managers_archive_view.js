@@ -19,14 +19,16 @@ exports.seed = function(knex, Promise) {
     , w.NominalTarget AS nominal_target
     , w.ContractedHoursPerWeek AS contracted_hours 
     , w.hoursReduction AS hours_reduction
-    , COUNT_BIG(*) AS count
     FROM dbo.OffenderManager om
     JOIN dbo.Workload w ON om.Id = w.OffenderManagerId
-    JOIN dbo.OrganisationalUnit ouTeam ON w.TeamId = ouTeam.Id
-    GROUP BY om.Id, w.Id, om.UniqueIdentifier, om.OffenderManagerTypeId, ouTeam.Name, w.LduId,
+    JOIN dbo.OrganisationalUnit ouTeam ON w.TeamId = ouTeam.Id`
+
+    var group = `GROUP BY om.Id, w.Id, om.UniqueIdentifier, om.OffenderManagerTypeId, ouTeam.Name, w.LduId,
     om.Forename, om.Surname, w.NominalTarget, w.TotalCases, w.TotalPoints, w.SDRPoints, 
     w.SDRConversionPoints, w.PAROMSPoints, w.ContractedHoursPerWeek, 
     w.hoursReduction`
+
+    //, COUNT_BIG(*) AS count
 
     var index = `CREATE UNIQUE CLUSTERED INDEX idx_offender_managers_archive_view
     ON dbo.offender_managers_archive_view(workload_id)`

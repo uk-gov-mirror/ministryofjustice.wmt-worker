@@ -31,5 +31,5 @@ exports.seed = function(knex, Promise) {
     return knex.schema
     .raw('DROP VIEW IF EXISTS dbo.archive_data_view;')
     .raw('SET ARITHABORT ON')
-    .raw(view)
+    //.raw(view)
 }
