@@ -4,34 +4,37 @@ exports.seed = function(knex, Promise) {
     AS
     SELECT
     om.Id AS om_id
+    , w.Id AS workload_id
     , om.UniqueIdentifier AS unique_identifier
     , om.OffenderManagerTypeId AS om_type_id
-    , ouLdu.Name AS ldu_name
+    , w.LduId AS workload_ldu_id
     , ouTeam.Name AS team_name
-    , CONCAT(om.Forename, ' ', om.Surname) AS om_name
-    , SUM(w.TotalCases) AS total_cases
-    , SUM(w.TotalPoints) AS total_points
-    , SUM(w.SDRPoints) AS sdr_points
-    , SUM(w.SDRConversionPoints) AS sdr_conversion_points
-    , SUM(w.PAROMSPoints) AS paroms_points
+    , om.Forename AS om_forename
+    , om.Surname AS om_surname
+    , w.TotalCases AS total_cases
+    , w.TotalPoints AS total_points
+    , w.SDRPoints AS sdr_points
+    , w.SDRConversionPoints AS sdr_conversion_points
+    , w.PAROMSPoints AS paroms_points
     , w.NominalTarget AS nominal_target
-    , SUM(w.ContractedHoursPerWeek) AS contracted_hours 
-    , SUM(w.hoursReduction) AS hours_reduction
+    , w.ContractedHoursPerWeek AS contracted_hours 
+    , w.hoursReduction AS hours_reduction
     , COUNT_BIG(*) AS count
     FROM dbo.OffenderManager om
     JOIN dbo.Workload w ON om.Id = w.OffenderManagerId
     JOIN dbo.OrganisationalUnit ouTeam ON w.TeamId = ouTeam.Id
-    JOIN dbo.OrganisationalUnit ouLdu ON w.LduId = ouLdu.Id
-    GROUP BY om.Id, om.UniqueIdentifier, om.OffenderManagerTypeId, ouTeam.Name, ouLdu.Name,
-    om.Forename, om.Surname, w.ContractedHoursPerWeek, w.NominalTarget`
+    GROUP BY om.Id, w.Id, om.UniqueIdentifier, om.OffenderManagerTypeId, ouTeam.Name, w.LduId,
+    om.Forename, om.Surname, w.NominalTarget, w.TotalCases, w.TotalPoints, w.SDRPoints, 
+    w.SDRConversionPoints, w.PAROMSPoints, w.ContractedHoursPerWeek, 
+    w.hoursReduction`
 
     var index = `CREATE UNIQUE CLUSTERED INDEX idx_offender_managers_archive_view
-    ON dbo.offender_managers_archive_view(om_id, team_name)`
+    ON dbo.offender_managers_archive_view(workload_id)`
 
     return knex.schema
     .raw('DROP VIEW IF EXISTS dbo.archive_data_view;')
     .raw('DROP VIEW IF EXISTS dbo.offender_managers_archive_view;')
     .raw('SET ARITHABORT ON')
     .raw(view)
-    //.raw(index)
+    .raw(index)
 }

@@ -5,34 +5,31 @@ exports.seed = function(knex, Promise) {
     SELECT
     om.unique_identifier AS unique_identifier
     , om.om_type_id AS om_type_id
-    , om.ldu_name AS ldu_name
+    , ouLdu.Name AS ldu_name
     , om.team_name AS team_name
-    , om.om_name AS om_name
-    , om.total_cases AS total_cases
-    , om.total_points AS total_points
-    , om.sdr_points AS sdr_points
-    , om.sdr_conversion_points AS sdr_conversion_points
-    , om.paroms_points AS paroms_points
+    , CONCAT(om.forename + ' ' + om.surname) AS om_name
+    , SUM(om.total_cases) AS total_cases
+    , SUM(om.total_points) AS total_points
+    , SUM(om.sdr_points) AS sdr_points
+    , SUM(om.sdr_conversion_points) AS sdr_conversion_points
+    , SUM(om.paroms_points) AS paroms_points
     , om.nominal_target AS nominal_target
-    , om.contracted_hours AS contracted_hours 
-    , om.hours_reduction AS hours_reduction
+    , SUM(om.contracted_hours) AS contracted_hours 
+    , SUM(om.hours_reduction) AS hours_reduction
     , n.HoursReduced AS reduction
     , n.Notes AS comments
     , n.LastUpdateDateTime AS reduction_date
     , n.LastUpdateUserId AS reduction_added_by
     FROM dbo.offender_managers_archive_view om
-    LEFT JOIN dbo.Note n ON om.om_id = n.OffenderManagerId`
+    JOIN dbo.OrganisationalUnit ouLdu ON om.workload_ldu_id = ouLdu.Id
+    LEFT JOIN dbo.Note n ON om.om_id = n.OffenderManagerId
+    GROUP BY om.UniqueIdentifier, om.om_type_id, ouLdu.Name, om.team_name, 
+    om.forename, om.surname, w.NominalTarget, w.TotalCases, w.TotalPoints, w.SDRPoints, 
+    w.SDRConversionPoints, w.PAROMSPoints, w.ContractedHoursPerWeek, 
+    w.hoursReduction, reduction, comments, reduction_date, reduction_added_by`
 
-    /** 
-    , IIF(om.om_id = n.OffenderManagerId, n.HoursReduced, null) AS reduction
-    , IIF(om.om_id = n.OffenderManagerId, n.Notes, null) AS comments
-    , IIF(om.om_id = n.OffenderManagerId, n.LastUpdateDateTime, null) AS reduction_date
-    , IIF(om.om_id = n.OffenderManagerId, n.LastUpdateUserId, null) AS reduction_added_by
-    , dbo.Note n
-    */
     return knex.schema
     .raw('DROP VIEW IF EXISTS dbo.archive_data_view;')
     .raw('SET ARITHABORT ON')
     .raw(view)
-    // .raw(index)
 }
