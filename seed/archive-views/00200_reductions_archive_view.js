@@ -12,7 +12,7 @@ exports.seed = function(knex, Promise) {
     FROM dbo.Note n`
 
     var index = `CREATE UNIQUE CLUSTERED INDEX idx_reductions_archive_view
-    ON dbo.reductions_archive_view(reduction_id)`
+    ON dbo.reductions_archive_view(reduction_id, offender_manager_id, reduction, reduction_date, reduction_added_by)`
 
     return knex.schema
     .raw('DROP VIEW IF EXISTS dbo.reductions_archive_view;')

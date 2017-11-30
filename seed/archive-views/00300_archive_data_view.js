@@ -20,9 +20,9 @@ exports.seed = function(knex, Promise) {
     , n.comments AS comments
     , n.reduction_date AS reduction_date
     , n.reduction_added_by AS reduction_added_by
-    FROM dbo.offender_managers_archive_view om
+    FROM dbo.offender_managers_archive_view om WITH (NOEXPAND)
     JOIN dbo.OrganisationalUnit ouLdu ON om.workload_ldu_id = ouLdu.Id
-    LEFT JOIN dbo.reductions_archive_view n ON om.om_id = n.offender_manager_id
+    LEFT JOIN dbo.reductions_archive_view n WITH (NOEXPAND) ON om.om_id = n.offender_manager_id
     GROUP BY om.unique_identifier, om.om_type_id, ouLdu.Name, om.team_name, 
     om.om_forename, om.om_surname, om.nominal_target, om.total_cases, om.total_points, om.sdr_points, 
     om.sdr_conversion_points, om.paroms_points, om.contracted_hours, 

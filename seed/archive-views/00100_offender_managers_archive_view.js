@@ -31,7 +31,9 @@ exports.seed = function(knex, Promise) {
     //, COUNT_BIG(*) AS count
 
     var index = `CREATE UNIQUE CLUSTERED INDEX idx_offender_managers_archive_view
-    ON dbo.offender_managers_archive_view(workload_id)`
+    ON dbo.offender_managers_archive_view(om_id, workload_id, unique_identifier, om_type_id, workload_ldu_id, 
+    team_name, om_forename, om_surname, total_cases, total_points, sdr_points, sdr_conversion_points, 
+    paroms_points, nominal_target, contracted_hours, hours_reduction)`
 
     return knex.schema
     .raw('DROP VIEW IF EXISTS dbo.archive_data_view;')
