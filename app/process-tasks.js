@@ -22,6 +22,7 @@ module.exports = function () {
 function processTasks (batchSize) {
   return getPendingTasksAndMarkInProgress(batchSize)
     .then(function (tasks) {
+      console.log('Tasks: ', tasks)
       log.info(`found ${tasks.length} tasks`)
       if (tasks.length === 0) { return }
 
