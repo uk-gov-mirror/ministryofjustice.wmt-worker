@@ -1,4 +1,5 @@
-const knex = require('../../../knex').appSchema
+const knexConfig = require('../../../knexfile').app
+const knex = require('knex')(knexConfig)
 
 module.exports = function (workloadReportId, type) {
   return knex('tasks')
@@ -7,4 +8,7 @@ module.exports = function (workloadReportId, type) {
             'status')
     .where('workload_report_id', workloadReportId)
     .where('type', type)
+    .finally(function() {
+      knex.destroy()
+    })
 }
