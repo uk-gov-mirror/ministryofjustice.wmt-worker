@@ -1,4 +1,5 @@
-const knex = require('../../../knex').appSchema
+const knexConfig = require('../../../knexfile').app
+const knex = require('knex')(knexConfig)
 const TaskStatus = require('../../constants/task-status')
 
 module.exports = function (tasks) {
@@ -21,4 +22,7 @@ module.exports = function (tasks) {
     batchSize = Math.floor(dbTasks.length / 7) + 1
   }
   return knex.batchInsert('tasks', dbTasks, batchSize).returning('id')
+  .finally(function() {
+    knex.destroy()
+  })
 }
