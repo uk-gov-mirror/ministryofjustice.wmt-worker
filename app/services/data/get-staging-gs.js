@@ -11,4 +11,7 @@ module.exports = function () {
     'om_key AS omKey',
     'om_team_key AS omTeamKey'
   )
+  .finally(function() {
+    knex.destroy()
+  })
 }
