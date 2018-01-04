@@ -1,5 +1,6 @@
 const config = require('../../../config')
-const knex = require('../../../knex').appSchema
+const knexConfig = require('../../../knexfile').app
+const knex = require('knex')(knexConfig)
 const offenderManagerTable = `${config.DB_APP_SCHEMA}.offender_manager`
 
 module.exports = function (offenderManager) {
@@ -26,5 +27,8 @@ module.exports = function (offenderManager) {
         offenderManagerId = result['id']
       }
       return offenderManagerId
+    })
+    .finally(function() {
+      knex.destroy()
     })
 }

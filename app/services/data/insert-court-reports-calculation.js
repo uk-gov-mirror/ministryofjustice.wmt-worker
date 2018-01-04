@@ -1,4 +1,5 @@
-const knex = require('../../../knex').appSchema
+const knexConfig = require('../../../knexfile').app
+const knex = require('knex')(knexConfig)
 
 module.exports = function (courtReportCalculation) {
   var dbObject = mapToDbObject(courtReportCalculation)
@@ -6,6 +7,9 @@ module.exports = function (courtReportCalculation) {
   return knex('court_reports_calculations')
     .returning('id')
     .insert(dbObject)
+    .finally(function() {
+      knex.destroy()
+    })
 }
 
 var mapToDbObject = function (courtReportCalculation) {

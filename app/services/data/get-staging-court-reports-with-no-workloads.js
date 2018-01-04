@@ -1,4 +1,5 @@
-const knex = require('../../../knex').stagingSchema
+const knexConfig = require('../../../knexfile').staging
+const knex = require('knex')(knexConfig)
 
 module.exports = function () {
   return knex('court_reports')
@@ -25,4 +26,7 @@ module.exports = function () {
     , 'court_reports.datestamp'
   )
   .whereNull('wmt_extract.id')
+  .finally(function() {
+    knex.destroy()
+  })
 }

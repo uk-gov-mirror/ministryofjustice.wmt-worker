@@ -1,5 +1,6 @@
 const config = require('../../../config')
-const knex = require('../../../knex').appSchema
+const knexConfig = require('../../../knexfile').app
+const knex = require('knex')(knexConfig)
 const lduTable = `${config.DB_APP_SCHEMA}.ldu`
 
 module.exports = function (ldu) {
@@ -24,5 +25,8 @@ module.exports = function (ldu) {
         lduId = result['id']
       }
       return lduId
+    })
+    .finally(function() {
+      knex.destroy()
     })
 }

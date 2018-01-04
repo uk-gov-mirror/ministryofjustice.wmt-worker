@@ -1,4 +1,5 @@
-const knex = require('../../../knex').stagingSchema
+const knexConfig = require('../../../knexfile').staging
+const knex = require('knex')(knexConfig)
 const Promise = require('bluebird').Promise
 const OmCourtReports = require('wmt-probation-rules').OmCourtReports
 const CasesSummary = require('wmt-probation-rules').CasesSummary
@@ -70,5 +71,8 @@ module.exports = function (range) {
         return omCourtReports
       })
     }
+  })
+  .finally(function() {
+    knex.destroy()
   })
 }

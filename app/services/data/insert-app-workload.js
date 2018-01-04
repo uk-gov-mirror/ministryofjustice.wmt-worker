@@ -1,4 +1,5 @@
-const knex = require('../../../knex').appSchema
+const knexConfig = require('../../../knexfile').app
+const knex = require('knex')(knexConfig)
 const Locations = require('wmt-probation-rules').Locations
 
 module.exports = function (workload, caseDetails) {
@@ -25,6 +26,9 @@ module.exports = function (workload, caseDetails) {
       promises.push(insertCaseDetails(custodyCaseDetails, workloadId, Locations.CUSTODY))
       promises.push(insertCaseDetails(licenseCaseDetails, workloadId, Locations.LICENSE))
       return Promise.all(promises).then(function () { return workloadId[0] })
+    })
+    .finally(function() {
+      knex.destroy()
     })
 }
 

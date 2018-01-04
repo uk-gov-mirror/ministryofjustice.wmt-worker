@@ -1,4 +1,5 @@
-const knex = require('../../../knex').appSchema
+const knexConfig = require('../../../knexfile').app
+const knex = require('knex')(knexConfig)
 
 const adjustmentStatus = require('../../constants/adjustment-status')
 
@@ -18,4 +19,7 @@ module.exports = function (category, workloadStagingIdStart, workloadStagingIdEn
       'adjustments.effective_from AS effectiveFrom',
       'adjustments.effective_to AS effectiveTo',
       'adjustments.status AS status')
+    .finally(function() {
+      knex.destroy()
+    })
 }

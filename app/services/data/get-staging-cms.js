@@ -1,4 +1,5 @@
-const knex = require('../../../knex').stagingSchema
+const knexConfig = require('../../../knexfile').staging
+const knex = require('knex')(knexConfig)
 
 module.exports = function () {
   return knex('cms')
@@ -12,4 +13,7 @@ module.exports = function () {
     'om_key AS omKey',
     'om_team_key AS omTeamKey'
   )
+  .finally(function() {
+    knex.destroy()
+  })
 }

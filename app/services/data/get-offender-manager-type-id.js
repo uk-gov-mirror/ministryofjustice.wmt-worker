@@ -1,4 +1,5 @@
-const knex = require('../../../knex').appSchema
+const knexConfig = require('../../../knexfile').app
+const knex = require('knex')(knexConfig)
 
 module.exports = function (workloadOwnerId) {
   return knex('workload_owner').withSchema('app')
@@ -6,4 +7,7 @@ module.exports = function (workloadOwnerId) {
     .where('workload_owner.id', workloadOwnerId)
     .first('offender_manager.type_id')
     .then((result) => result.type_id)
+    .finally(function() {
+      knex.destroy()
+    })
 }

@@ -1,4 +1,5 @@
-const knex = require('../../../knex').appSchema
+const knexConfig = require('../../../knexfile').app
+const knex = require('knex')(knexConfig)
 const reductionStatus = require('../../constants/reduction-status')
 
 module.exports = function (workloadStagingIdStart, workloadStagingIdEnd, workloadReportId) {
@@ -13,4 +14,7 @@ module.exports = function (workloadStagingIdStart, workloadStagingIdEnd, workloa
     .whereRaw('workload.staging_id BETWEEN ? AND ? ' +
       'AND (status IS NULL OR status IN (\'' + reductionStatus.ACTIVE + '\',\'' + reductionStatus.SCHEDULED + '\')) ' +
       'AND workload.workload_report_id = ?', [workloadStagingIdStart, workloadStagingIdEnd, workloadReportId])
+    .finally(function() {
+      knex.destroy()
+    })
 }
