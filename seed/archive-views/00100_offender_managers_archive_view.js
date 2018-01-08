@@ -23,13 +23,6 @@ exports.seed = function(knex, Promise) {
     JOIN dbo.Workload w ON om.Id = w.OffenderManagerId
     JOIN dbo.OrganisationalUnit ouTeam ON w.TeamId = ouTeam.Id`
 
-    var group = `GROUP BY om.Id, w.Id, om.UniqueIdentifier, om.OffenderManagerTypeId, ouTeam.Name, w.LduId,
-    om.Forename, om.Surname, w.NominalTarget, w.TotalCases, w.TotalPoints, w.SDRPoints, 
-    w.SDRConversionPoints, w.PAROMSPoints, w.ContractedHoursPerWeek, 
-    w.hoursReduction`
-
-    //, COUNT_BIG(*) AS count
-
     var index = `CREATE UNIQUE CLUSTERED INDEX idx_offender_managers_archive_view
     ON dbo.offender_managers_archive_view(om_id, workload_id, unique_identifier, om_type_id, workload_ldu_id, 
     team_name, om_forename, om_surname, total_cases, total_points, sdr_points, sdr_conversion_points, 
@@ -37,6 +30,7 @@ exports.seed = function(knex, Promise) {
 
     return knex.schema
     .raw('DROP VIEW IF EXISTS dbo.archive_data_view;')
+    .raw('DROP VIEW IF EXISTS dbo.aggregate_offender_managers_view;')
     .raw('DROP VIEW IF EXISTS dbo.offender_managers_archive_view;')
     .raw('SET ARITHABORT ON')
     .raw(view)
