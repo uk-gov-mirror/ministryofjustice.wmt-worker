@@ -75,7 +75,7 @@ module.exports = {
     seeds: {
       directory: 'seed/archive-views'
     },
-    debug: true
+    debug: false
   },
   views: {
     client: 'mssql',
