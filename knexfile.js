@@ -63,6 +63,7 @@ module.exports = {
   archive: {
     client: 'mssql',
     connection: Object.assign({}, defaultConnection, {
+      host: config.ARCHIVE_DATABASE_SERVER,
       user: config.ARCHIVE_DATABASE_USERNAME,
       password: config.ARCHIVE_DATABASE_PASSWORD,
       database: config.ARCHIVE_DATABASE,

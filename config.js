@@ -15,6 +15,7 @@ module.exports = {
   DB_STG_SCHEMA: 'staging',
 
   // Archive DB
+  ARCHIVE_DATABASE_SERVER: process.env.WMT_ARCHIVE_DB_SERVER || 'localhost',
   ARCHIVE_DATABASE: process.env.WMT_ARCHIVE_DB_NAME || 'wmt_db',
   ARCHIVE_DATABASE_USERNAME: process.env.WMT_DB_USERNAME || 'wmt',
   ARCHIVE_DATABASE_PASSWORD: process.env.WMT_DB_PASSWORD || 'wmt',
