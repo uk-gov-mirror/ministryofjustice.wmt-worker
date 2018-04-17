@@ -80,18 +80,27 @@ var insertTiers = function (tiers, t2aTiers, workloadId, location) {
 var insertCaseDetails = function (caseDetails, workloadId, location) {
   var caseDetailsToInsert = []
   caseDetails.forEach(function (caseDetail) {
-    var caseDetailToInsert = {
-      workload_id: workloadId,
-      tier_code: caseDetail.tierCode,
-      row_type: caseDetail.rowType,
-      case_ref_no: caseDetail.caseRefNo,
-      team_code: caseDetail.teamCode,
-      grade_code: caseDetail.omGradeCode,
-      location: location
+    if (typeof caseDetail.tier_code === 'number') {
+      var caseDetailToInsert = {
+        workload_id: workloadId,
+        tier_code: caseDetail.tierCode,
+        row_type: caseDetail.rowType,
+        case_ref_no: caseDetail.caseRefNo,
+        team_code: caseDetail.teamCode,
+        grade_code: caseDetail.omGradeCode,
+        location: location
+      }
+      caseDetailsToInsert.push(caseDetailToInsert)
     }
-    caseDetailsToInsert.push(caseDetailToInsert)
   })
-  return knex('case_details').insert(caseDetailsToInsert)
+
+  // Default to ((2100 / 8) - 1). This is to avoid 2100 parameter server error.
+  // 8 is the number columns in this table and 2100 is number of max parameters.
+  var batchSize = 261
+  if (caseDetailsToInsert.length > 30) {
+    batchSize = Math.floor(caseDetailsToInsert.length / 8) + 1
+  }
+  return knex.batchInsert('case_details', caseDetailsToInsert, batchSize)
 }
 
 var mapForInsert = function (record) {

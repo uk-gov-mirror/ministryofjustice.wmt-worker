@@ -8,7 +8,7 @@ const adjustmentStatus = require('../constants/adjustment-status')
 module.exports.mapCmsAdjustments = function (workloadStagingIdStart, workloadStagingIdEnd, workloadReportId) {
   return getWorkloadOwnersInWorkloadRange(workloadStagingIdStart, workloadStagingIdEnd, workloadReportId)
   .then(function (workloadOwnerIds) {
-    return getStagingCms()
+    return getStagingCms(workloadStagingIdStart, workloadStagingIdEnd)
     .then(function (cmsRecords) {
       var stgAdjustments = []
       var promises = []
@@ -26,32 +26,34 @@ module.exports.mapCmsAdjustments = function (workloadStagingIdStart, workloadSta
                   var endDate = new Date(startDate)
                   endDate.setDate(endDate.getDate() + 30)
 
-                  var contactAdjustment = {
-                    contactId: cmsRecord.contactId,
-                    workloadOwnerId: contactWorkloadOwnerId,
-                    points: adjustmentReason.points,
-                    adjustmentReasonId: adjustmentReason.id,
-                    effectiveFrom: startDate,
-                    effectiveTo: endDate,
-                    status: adjustmentStatus.ACTIVE
-                  }
+                  if (adjustmentReason) {
+                    var contactAdjustment = {
+                      contactId: cmsRecord.contactId,
+                      workloadOwnerId: contactWorkloadOwnerId,
+                      points: adjustmentReason.points,
+                      adjustmentReasonId: adjustmentReason.id,
+                      effectiveFrom: startDate,
+                      effectiveTo: endDate,
+                      status: adjustmentStatus.ACTIVE
+                    }
 
-                  var omAdjustment = {
-                    contactId: cmsRecord.contactId,
-                    workloadOwnerId: omWorkloadOwnerId,
-                    points: adjustmentReason.points * -1,
-                    adjustmentReasonId: adjustmentReason.id,
-                    effectiveFrom: startDate,
-                    effectiveTo: endDate,
-                    status: adjustmentStatus.ACTIVE
-                  }
+                    var omAdjustment = {
+                      contactId: cmsRecord.contactId,
+                      workloadOwnerId: omWorkloadOwnerId,
+                      points: adjustmentReason.points * -1,
+                      adjustmentReasonId: adjustmentReason.id,
+                      effectiveFrom: startDate,
+                      effectiveTo: endDate,
+                      status: adjustmentStatus.ACTIVE
+                    }
 
-                  if (workloadOwnerIds.includes(contactAdjustment.workloadOwnerId)) {
-                    stgAdjustments.push(contactAdjustment)
-                  }
+                    if (workloadOwnerIds.includes(contactAdjustment.workloadOwnerId)) {
+                      stgAdjustments.push(contactAdjustment)
+                    }
 
-                  if (workloadOwnerIds.includes(omAdjustment.workloadOwnerId)) {
-                    stgAdjustments.push(omAdjustment)
+                    if (workloadOwnerIds.includes(omAdjustment.workloadOwnerId)) {
+                      stgAdjustments.push(omAdjustment)
+                    }
                   }
                 })
               })

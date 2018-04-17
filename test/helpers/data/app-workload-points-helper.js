@@ -60,7 +60,8 @@ module.exports.getWorkloadPoints = function () {
       weighting_arms_comm: 33,
       paroms_enabled: 1,
       parom: 31,
-      is_t2a: false
+      is_t2a: false,
+      default_contracted_hours_spo: 0
     },
     {
       comm_tier_1: 5,
@@ -98,7 +99,8 @@ module.exports.getWorkloadPoints = function () {
       weighting_arms_comm: 0,
       paroms_enabled: 0,
       parom: 0,
-      is_t2a: true
+      is_t2a: true,
+      default_contracted_hours_spo: 0
     }
   ]
 }

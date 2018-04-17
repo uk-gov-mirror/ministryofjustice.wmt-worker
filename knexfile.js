@@ -34,7 +34,7 @@ module.exports = {
       password: config.MIGRATION_APP_DATABASE_PASSWORD,
       options: {
         encrypt: true,
-        requestTimeout: 120000
+        requestTimeout: 90000
       }
     }),
     migrations: {
@@ -43,7 +43,12 @@ module.exports = {
     seeds: {
       directory: 'seed/data/ref'
     },
-    debug: false
+    debug: false,
+    pool: {
+      min: 0,
+      max: 300
+    },
+    acquireConnectionTimeout: 150000
   },
   dev: {
     client: 'mssql',
@@ -52,7 +57,7 @@ module.exports = {
       password: config.MIGRATION_APP_DATABASE_PASSWORD,
       options: {
         encrypt: true,
-        requestTimeout: 60000
+        requestTimeout: 90000
       }
     }),
     seeds: {
@@ -84,7 +89,7 @@ module.exports = {
       password: config.MIGRATION_APP_DATABASE_PASSWORD,
       options: {
         encrypt: true,
-        requestTimeout: 60000
+        requestTimeout: 600000
       }
     }),
     seeds: {

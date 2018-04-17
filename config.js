@@ -3,8 +3,8 @@ module.exports = {
   LOGGING_LEVEL: process.env.LOGGING_LEVEL || 'DEBUG',
 
   // Worker
-  ASYNC_WORKER_CRON: process.env.WMT_ASYNC_WORKER_CRON || '*/5 * * * * *', // default every 5 seconds
-  ASYNC_WORKER_BATCH_SIZE: process.env.WMT_ASYNC_WORKER_BATCH_SIZE || '5',
+  ASYNC_WORKER_CRON: process.env.WMT_ASYNC_WORKER_CRON || '0 * * * * *', // default every minute
+  ASYNC_WORKER_BATCH_SIZE: process.env.WMT_ASYNC_WORKER_BATCH_SIZE || '25',
 
   // DB
   DATABASE_SERVER: process.env.WMT_DB_SERVER || 'localhost',
@@ -38,5 +38,8 @@ module.exports = {
   // Staging
   // WMT ETL
   ETL_STAGING_DATABASE_USERNAME: process.env.WMT_ETL_STAGING_DATABASE_USERNAME || 'wmt_etl',
-  ETL_STAGING_DATABASE_PASSWORD: process.env.WMT_ETL_STAGING_DATABASE_PASSWORD || 'wmt_etl'
+  ETL_STAGING_DATABASE_PASSWORD: process.env.WMT_ETL_STAGING_DATABASE_PASSWORD || 'wmt_etl',
+
+  // WMT Worker
+  IP_ADDRESSES: process.env.WMT_WORKER_APP_IP_ADDRESSES || 'http://localhost:3000'
 }
