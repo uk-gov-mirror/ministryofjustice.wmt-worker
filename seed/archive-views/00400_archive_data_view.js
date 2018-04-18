@@ -1,31 +1,31 @@
-exports.seed = function(knex, Promise) {
-    var view = `CREATE VIEW archive_data_view
-    WITH SCHEMABINDING 
-    AS
-    SELECT
-    om.unique_identifier AS unique_identifier
-    , om.om_type_id AS om_type_id
-    , ouLdu.Name AS ldu_name
-    , om.team_name AS team_name
-    , om.om_name AS om_name
-    , om.total_cases AS total_cases
-    , om.total_points AS total_points
-    , om.sdr_points AS sdr_points
-    , om.sdr_conversion_points AS sdr_conversion_points
-    , om.paroms_points AS paroms_points
-    , om.nominal_target AS nominal_target
-    , om.contracted_hours AS contracted_hours
-    , om.hours_reduction AS hours_reduction
-    , n.reduction AS reduction
-    , n.comments AS comments
-    , n.reduction_date AS reduction_date
-    , n.reduction_added_by AS reduction_added_by
-    FROM dbo.aggregate_offender_managers_view om
-    JOIN dbo.OrganisationalUnit ouLdu ON om.workload_ldu_id = ouLdu.Id
-    LEFT JOIN dbo.reductions_archive_view n WITH (NOEXPAND) ON om.om_id = n.offender_manager_id`
+exports.seed = function (knex, Promise) {
+  var view = `CREATE VIEW archive_data_view
+  WITH SCHEMABINDING 
+  AS
+  SELECT
+  om.unique_identifier AS unique_identifier
+  , om.om_type_id AS om_type_id
+  , ouLdu.Name AS ldu_name
+  , om.team_name AS team_name
+  , om.om_name AS om_name
+  , om.total_cases AS total_cases
+  , om.total_points AS total_points
+  , om.sdr_points AS sdr_points
+  , om.sdr_conversion_points AS sdr_conversion_points
+  , om.paroms_points AS paroms_points
+  , om.nominal_target AS nominal_target
+  , om.contracted_hours AS contracted_hours
+  , om.hours_reduction AS hours_reduction
+  , n.reduction AS reduction
+  , n.comments AS comments
+  , n.reduction_date AS reduction_date
+  , n.reduction_added_by AS reduction_added_by
+  FROM dbo.aggregate_offender_managers_view om
+  JOIN dbo.OrganisationalUnit ouLdu ON om.workload_ldu_id = ouLdu.Id
+  LEFT JOIN dbo.reductions_archive_view n WITH (NOEXPAND) ON om.om_id = n.offender_manager_id`
 
-    return knex.schema
-    .raw('DROP VIEW IF EXISTS dbo.archive_data_view;')
-    .raw('SET ARITHABORT ON')
-    .raw(view)
+  return knex.schema
+  .raw('DROP VIEW IF EXISTS dbo.archive_data_view;')
+  .raw('SET ARITHABORT ON')
+  .raw(view)
 }
