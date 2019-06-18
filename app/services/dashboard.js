@@ -16,8 +16,13 @@ module.exports = function () {
           return getCaseload()
             .then(function (caseloadData) {
               var caseloadArray = formatDashboardCaseload(caseloadData)
-              var filepath = pythonDashboard(reductionsArray, capacityArray, caseloadArray)
-              return filepath
+              return pythonDashboard(reductionsArray, capacityArray, caseloadArray)
+                .then(function (filepath) {
+                  return filepath
+                })
+                .catch(function (error) {
+                  throw (error)
+                })
             })
         })
     })

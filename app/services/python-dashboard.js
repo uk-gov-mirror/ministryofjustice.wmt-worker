@@ -1,30 +1,28 @@
-const Promise = require('bluebird')
 const PythonBridge = require('python-bridge')
 const config = require('../../config')
+const log = require('./log')
+const dateFormatter = require('./date-formatter')
 
 module.exports = function (reductions, capacity, formattedCaseloadData) {
 
   var python = PythonBridge()
-  var outputFilename = config.WMT_DASHBOARD_OUTPUT_FILE_PATH + 'dashboard.xlsx'
+  const datestamp = dateFormatter.now().format('YYYYMMDDHHmmss')
+  var outputFilename = config.WMT_DASHBOARD_OUTPUT_FILE_PATH + 'dashboard_' + datestamp + '.xlsm'
 
   python.ex`
   from openpyxl import load_workbook
-  from openpyxl import Workbook
-  import json
   import os
-  def write_dashboard(reductions, capacity, caseload, templateFilepath, outputFilepath, outputDirectory):
+
+  def write_dashboard(reductions, capacity, caseload, templateFilepath, outputFilepath, outputDirectory, spreadsheetPassword):
     if not os.path.exists(outputDirectory):
       os.makedirs(outputDirectory)
-    '''wb = Workbook()'''
-    '''wb.create_sheet(title="caseload data")'''
-    '''wb.create_sheet(title="reductions data")'''
-    '''wb.create_sheet(title="capacity data")'''
-
-    workbook = load_workbook(filename=templateFilepath)
+    workbook = load_workbook(filename=templateFilepath, keep_vba=True)
     populate_data(reductions, workbook, 'reductions data')
     populate_data(capacity, workbook, 'capacity data')
     populate_data(caseload, workbook, 'caseload data')
+    protect_sheets(workbook, spreadsheetPassword)
     workbook.save(filename=outputFilepath)
+
   def populate_data(data, workbook, sheetName):
     rowNum = 2
     colNum = 1
@@ -35,10 +33,28 @@ module.exports = function (reductions, capacity, formattedCaseloadData) {
         colNum = colNum + 1
       colNum = 1
       rowNum = rowNum + 1
-    print ('Finished', sheetName)`
+
+  def protect_sheets(workbook, spreadsheetPassword):
+    for sheet in workbook.sheetnames:
+      ws = workbook[sheet]
+      ws.protection.password = spreadsheetPassword
+    workbook['caseload data'].sheet_state = 'hidden'
+    workbook['capacity data'].sheet_state = 'hidden'
+    workbook['reductions data'].sheet_state = 'hidden'`
 
   
-  python`write_dashboard(${reductions}, ${capacity}, ${formattedCaseloadData}, ${config.WMT_DASHBOARD_TEMPLATE_FILE_PATH}, ${outputFilename}, ${config.WMT_DASHBOARD_OUTPUT_FILE_PATH})`
-  python.end()
-  return outputFilename
+  return python`write_dashboard(${reductions}, ${capacity}, ${formattedCaseloadData}, ${config.WMT_DASHBOARD_TEMPLATE_FILE_PATH}, ${outputFilename}, ${config.WMT_DASHBOARD_OUTPUT_FILE_PATH}, ${config.WMT_DASHBOARD_PASSWORD})`
+    .then(function () {
+      log.info('Python has finished Generating the dashboard')
+      return outputFilename
+    })
+    .catch(function (error) {
+      log.error('Python encountered an error while generating the dashboard')
+      log.error(error)
+      throw (error)
+    })
+    .finally(function () {
+      python.end()
+      log.info('Closing Python Bridge')
+    })
 }
