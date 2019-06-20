@@ -4,7 +4,8 @@ const calculateOverviewValues = require('./helpers/calculate-overview-values')
 const getCaseload = require('../services/get-caseload')
 const formatDashboardCaseload = require('./helpers/format-dashboard-caseload')
 const formatDashboardCapacity = require('./helpers/format-dashboard-capacity')
-const pythonDashboard = require('./python-dashboard')
+// const pythonDashboard = require('./python-dashboard')
+const nodeDashboard = require('./node-dashboard')
 
 module.exports = function () {
   return getReductionNotesDashboard()
@@ -16,7 +17,7 @@ module.exports = function () {
           return getCaseload()
             .then(function (caseloadData) {
               var caseloadArray = formatDashboardCaseload(caseloadData)
-              return pythonDashboard(reductionsArray, capacityArray, caseloadArray)
+              return nodeDashboard(reductionsArray, capacityArray, caseloadArray)
                 .then(function (filepath) {
                   return filepath
                 })
