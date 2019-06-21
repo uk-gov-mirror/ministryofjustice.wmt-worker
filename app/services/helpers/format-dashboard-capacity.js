@@ -7,15 +7,23 @@ module.exports = function (capacity) {
       record.teamName,
       record.offenderManager,
       record.gradeCode,
-      record.capacityPercentage,
+      formatCapacityValue(record.capacityPercentage),
       record.totalPoints,
       record.remainingPoints,
       record.contractedHours,
       record.reductionHours,
       record.totalCases,
       record.cmsAdjustmentPoints,
-      record.cmsPercentage
+      formatCMSPercentage(record.cmsPercentage)
     ])
   })
   return capacityArray
+}
+
+var formatCapacityValue = function (capacity) {
+  return Math.round(capacity) + '%'
+}
+
+var formatCMSPercentage = function (cms) {
+  return cms.toFixed(1) + '%'
 }
