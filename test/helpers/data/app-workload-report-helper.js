@@ -17,6 +17,6 @@ module.exports.insertDependencies = function (inserts) {
 module.exports.removeDependencies = function (inserts) {
   inserts = inserts.reverse()
   return Promise.each(inserts, (deletion) => {
-    return knex(deletion.table).whereIn('id', deletion.id).del()
+    return knex(deletion.table).where('id', deletion.id).del()
   })
 }
