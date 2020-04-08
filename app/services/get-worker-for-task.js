@@ -8,6 +8,11 @@ var adjustmentsWorker = require('./workers/adjustments-worker')
 var createCourtReports = require('./workers/create-court-reports')
 var courtReportsCalculation = require('./workers/court-reports-calculations')
 var createTasksForMissing = require('./workers/create-tasks-for-missing')
+var generateDashboard = require('./workers/generate-dashboard')
+var removeDuplicates = require('./workers/remove-duplicates')
+var checkForMissingDivisions = require('./workers/check-for-missing-divisions')
+var createOmicWorkload = require('./workers/create-omic-workload')
+var calculateOmicWorkloadPoints = require('./workers/calculate-omic-workload-points')
 
 // ALL WORKERS SHOULD HAVE A METHOD `execute(task)` that returns a Promise
 module.exports = function (taskType) {
@@ -21,6 +26,11 @@ module.exports = function (taskType) {
     case taskTypes.CREATE_COURT_REPORTS: return createCourtReports
     case taskTypes.COURT_REPORTS_CALCULATION: return courtReportsCalculation
     case taskTypes.CREATE_TASKS_FOR_MISSING: return createTasksForMissing
+    case taskTypes.GENERATE_DASHBOARD: return generateDashboard
+    case taskTypes.REMOVE_DUPLICATES: return removeDuplicates
+    case taskTypes.CHECK_FOR_MISSING_DIVISIONS: return checkForMissingDivisions
+    case taskTypes.CREATE_OMIC_WORKLOAD: return createOmicWorkload
+    case taskTypes.CALCULATE_OMIC_WORKLOAD_POINTS: return calculateOmicWorkloadPoints
   }
 
   return null

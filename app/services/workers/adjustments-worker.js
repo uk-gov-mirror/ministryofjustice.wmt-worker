@@ -9,9 +9,11 @@ const logger = require('../log')
 
 const stagingAdjustmentsMapper = require('../staging-adjustments-mapper')
 const getAppAdjustmentsForBatch = require('../data/get-app-adjustments-for-batch')
+const getAppGsAdjustmentsForBatch = require('../data/get-app-gs-adjustments-for-batch')
 const updateAdjustmentEffectiveTo = require('../data/update-adjustment-effective-to')
 const insertAdjustment = require('../data/insert-adjustment')
 const updateStatus = require('../update-adjustment-reduction-status')
+const updateAdjustmentCRN = require('../data/update-adjustment-crn')
 
 module.exports.execute = function (task) {
   var workloadStagingIdStart = task.additionalData.startingId
@@ -22,29 +24,33 @@ module.exports.execute = function (task) {
   .then(function () {
     logger.info('Retrieving open adjustments for workload owners with workloads\' staging ids ' + workloadStagingIdStart + ' - ' + workloadStagingIdEnd + ', for workload report ' + workloadReportId)
     return getAppAdjustmentsForBatch(adjustmentCategory.CMS, workloadStagingIdStart, workloadStagingIdEnd, workloadReportId)
-    .then(function (adjustments) {
-      return updateStatus.updateAdjustmentStatuses(adjustments)
-      .then(function () {
-        logger.info('Adjustment statuses updated')
-        var calculateWpAdditionalData = {
-          workloadBatch: task.additionalData,
-          operationType: operationTypes.INSERT
-        }
-
-        var calculateWorkloadPointsTask = new Task(
-          undefined,
-          submittingAgent.WORKER,
-          taskType.CALCULATE_WORKLOAD_POINTS,
-          calculateWpAdditionalData,
-          task.workloadReportId,
-          undefined,
-          undefined,
-          taskStatus.PENDING
-        )
-
-        return createNewTasks([calculateWorkloadPointsTask])
+    .then(function (cmsAdjustments) {
+      return getAppGsAdjustmentsForBatch(workloadStagingIdStart, workloadStagingIdEnd, workloadReportId)
+      .then(function (gsAdjustments) {
+        var adjustments = cmsAdjustments.concat(gsAdjustments)
+        return updateStatus.updateAdjustmentStatuses(adjustments)
         .then(function () {
-          logger.info('Calculate Workload Task created')
+          logger.info('Adjustment statuses updated')
+          var calculateWpAdditionalData = {
+            workloadBatch: task.additionalData,
+            operationType: operationTypes.INSERT
+          }
+
+          var calculateWorkloadPointsTask = new Task(
+            undefined,
+            submittingAgent.WORKER,
+            taskType.CALCULATE_WORKLOAD_POINTS,
+            calculateWpAdditionalData,
+            task.workloadReportId,
+            undefined,
+            undefined,
+            taskStatus.AWAITING_DUPLICATE_CHECK
+          )
+
+          return createNewTasks([calculateWorkloadPointsTask])
+          .then(function () {
+            logger.info('Calculate Workload Task created')
+          })
         })
       })
     })
@@ -58,6 +64,7 @@ var processAdjustments = function (workloadStagingIdStart, workloadStagingIdEnd,
     .then(function (appAdjustments) {
       var updateAdjustmentsEffectiveTo = []
       var insertAdjustments = []
+      var updateAdjustmentCRNs = []
 
       var stgAdjustmentIds = []
       stgAdjustments.forEach(function (stgAdjustment) {
@@ -77,6 +84,13 @@ var processAdjustments = function (workloadStagingIdStart, workloadStagingIdEnd,
         if (!stgAdjustmentIds.includes(appAdjustmentId)) {
           // set date of this adjustment to today at 00.00 in order to set as archived in next stage of worker
           updateAdjustmentsEffectiveTo.push(updateAdjustmentEffectiveTo(appAdjustment.id, updateTime))
+        } else {
+          var updatedStgAdjustment = stgAdjustments.filter(stgAdjustment => String(stgAdjustment.contactId) === String(appAdjustment.contactId) && String(stgAdjustment.workloadOwnerId) === String(appAdjustment.workloadOwnerId))
+          if (updatedStgAdjustment) {
+            if (updatedStgAdjustment.length > 0) {
+              updateAdjustmentCRNs.push(updateAdjustmentCRN(appAdjustment.id, updatedStgAdjustment[0].crn))
+            }
+          }
         }
       })
 
@@ -90,6 +104,9 @@ var processAdjustments = function (workloadStagingIdStart, workloadStagingIdEnd,
       return Promise.all(updateAdjustmentsEffectiveTo)
       .then(function () {
         return Promise.all(insertAdjustments)
+        .then(function () {
+          return Promise.all(updateAdjustmentCRNs)
+        })
       })
     })
   })

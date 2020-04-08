@@ -4,11 +4,12 @@ exports.seed = function (knex, promise) {
   AS
   SELECT
       t.description AS name
-    , SUM(w.total_cases) AS total_cases
+    , SUM(w.total_filtered_cases + w.total_t2a_cases) AS total_cases
     , SUM(wpc.available_points) AS available_points
     , SUM(wpc.total_points) AS total_points
     , SUM(wpc.contracted_hours) AS contracted_hours
     , SUM(wpc.reduction_hours) AS reduction_hours
+    , SUM(wpc.cms_adjustment_points) AS cms_adjustment_points
     , l.id AS id
     , t.id AS link_id
     , COUNT_BIG(*) AS count

@@ -35,6 +35,9 @@ const aliases = {
   commtierb2: 'commtierb2',
   commtierb1: 'commtierb1',
   commtiera: 'commtiera',
+  commtiere: 'commtiere',
+  commtierf: 'commtierf',
+  commtierg: 'commtierg',
   licencetier0: 'licencetier0',
   licencetierd2: 'licencetierd2',
   licencetierd1: 'licencetierd1',
@@ -43,6 +46,9 @@ const aliases = {
   licencetierb2: 'licencetierb2',
   licencetierb1: 'licencetierb1',
   licencetiera: 'licencetiera',
+  licencetiere: 'licencetiere',
+  licencetierf: 'licencetierf',
+  licencetierg: 'licencetierg',
   custtier0: 'custtier0',
   custtierd2: 'custtierd2',
   custtierd1: 'custtierd1',
@@ -51,6 +57,9 @@ const aliases = {
   custtierb2: 'custtierb2',
   custtierb1: 'custtierb1',
   custtiera: 'custtiera',
+  custtiere: 'custtiere',
+  custtierf: 'custtierf',
+  custtierg: 'custtierg',
   assessmentDate: 'assessment_date',
   assessmentCode: 'assessment_code',
   assessmentDescription: 'assessment_desc',
@@ -66,6 +75,7 @@ const aliases = {
 }
 
 const wmtExtractTable = 'wmt_extract'
+const wmtExtractFilteredTable = 'wmt_extract_filtered'
 const courtReportsTable = 'court_reports'
 const institutionalReportsTable = 'inst_reports'
 const armsTable = 'arms'
@@ -118,6 +128,16 @@ module.exports.insertT2aCaseSummaryReport = function (caseSummary, inserts) {
     .returning('id')
     .then(function (id) {
       inserts.push({ table: t2aTable, id: id })
+      return inserts
+    })
+}
+
+module.exports.insertFilteredCaseSummaryReport = function (caseSummary, inserts) {
+  return knex(wmtExtractFilteredTable)
+    .insert(mapFilteredForInsert(caseSummary))
+    .returning('id')
+    .then(function (id) {
+      inserts.push({ table: wmtExtractFilteredTable, id: id })
       return inserts
     })
 }
@@ -195,6 +215,39 @@ function mapForInsert (record) {
         }
       }
     } else if (key === 'custodyTiers') {
+      for (let subkey in record[key]) {
+        let alias = subkey === 'untiered' ? '0' : subkey
+        if (typeof aliases['custtier' + alias] !== 'undefined') {
+          row[aliases['custtier' + alias]] = record[key][subkey]
+        }
+      }
+    } else {
+      if (typeof aliases[key] !== 'undefined') {
+        row[aliases[key]] = record[key]
+      }
+    }
+  }
+  return row
+}
+
+function mapFilteredForInsert (record) {
+  var row = {}
+  for (let key in record) {
+    if (key === 'filteredCommunityTiers') {
+      for (let subkey in record[key]) {
+        let alias = subkey === 'untiered' ? '0' : subkey
+        if (typeof aliases['commtier' + alias] !== 'undefined') {
+          row[aliases['commtier' + alias]] = record[key][subkey]
+        }
+      }
+    } else if (key === 'filteredLicenseTiers') {
+      for (let subkey in record[key]) {
+        let alias = subkey === 'untiered' ? '0' : subkey
+        if (typeof aliases['licencetier' + alias] !== 'undefined') {
+          row[aliases['licencetier' + alias]] = record[key][subkey]
+        }
+      }
+    } else if (key === 'filteredCustodyTiers') {
       for (let subkey in record[key]) {
         let alias = subkey === 'untiered' ? '0' : subkey
         if (typeof aliases['custtier' + alias] !== 'undefined') {

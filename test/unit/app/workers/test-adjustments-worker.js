@@ -13,7 +13,9 @@ var updateStatus
 var createNewTasks
 var stagingAdjustmentsMapper
 var getAppAdjustments
+var getAppGsAdjustments
 var updateAdjustmentEffectiveTo
+var updateAdjustmentCRN
 var insertAdjustment
 var relativeFilePath = 'services/workers/adjustments-worker'
 
@@ -22,6 +24,13 @@ var activeAdjustment = {
   effectiveFrom: dateHelper.yesterday,
   effectiveTo: dateHelper.tomorrow,
   status: null
+}
+
+var activeAdjustmentToBeArchived = {
+  id: 5,
+  effectiveFrom: dateHelper.yesterday,
+  effectiveTo: dateHelper.yesterday,
+  status: adjustmentStatus.ACTIVE
 }
 
 var scheduledAdjustment = {
@@ -45,7 +54,7 @@ var existingActiveAdjustment = {
   status: adjustmentStatus.ACTIVE
 }
 
-var adjustments = [activeAdjustment, scheduledAdjustment, archivedAdjustment, existingActiveAdjustment]
+var adjustments = [activeAdjustment, activeAdjustmentToBeArchived, scheduledAdjustment, archivedAdjustment, existingActiveAdjustment]
 
 var existingContactId = 12
 var existingContactOmId = 31
@@ -61,7 +70,8 @@ var cmsAdjustments = [
     adjustmentReasonId: 1,
     effectiveFrom: 'testfrom',
     effetiveTo: 'testto',
-    status: adjustmentStatus.ACTIVE
+    status: adjustmentStatus.ACTIVE,
+    case_ref_no: 'CMSTEST1000'
   },
   {
     contactId: existingContactId,
@@ -70,7 +80,8 @@ var cmsAdjustments = [
     adjustmentReasonId: 1,
     effectiveFrom: 'testfrom',
     effetiveTo: 'testto',
-    status: adjustmentStatus.ACTIVE
+    status: adjustmentStatus.ACTIVE,
+    case_ref_no: 'CMSTEST2000'
   }
 ]
 
@@ -82,7 +93,21 @@ var gsAdjustments = [
     adjsutmentReasonId: 2,
     effectiveFrom: 'testfrom',
     effetiveTo: 'testto',
-    status: adjustmentStatus.ACTIVE
+    status: adjustmentStatus.ACTIVE,
+    case_ref_no: null
+  }
+]
+
+var stgGsAdjustments = [
+  {
+    contactId: gsContactId,
+    workloadOwnerId: existingOmId,
+    points: -6,
+    adjsutmentReasonId: 2,
+    effectiveFrom: 'testfrom',
+    effetiveTo: 'testto',
+    status: adjustmentStatus.ACTIVE,
+    crn: 'GSTEST1000'
   }
 ]
 
@@ -109,7 +134,8 @@ var adjustmentRow = {
   workloadOwnerId: existingContactOmId,
   effectiveFrom: dateHelper.yesterday,
   effectiveTo: dateHelper.dayAfterTomorrow,
-  status: adjustmentStatus.ACTIVE
+  status: adjustmentStatus.ACTIVE,
+  case_ref_no: 'ADJTEST1000'
 }
 
 describe(relativeFilePath, function () {
@@ -119,7 +145,9 @@ describe(relativeFilePath, function () {
     }
     createNewTasks = sinon.stub().resolves()
     getAppAdjustments = sinon.stub()
+    getAppGsAdjustments = sinon.stub()
     updateAdjustmentEffectiveTo = sinon.stub().resolves()
+    updateAdjustmentCRN = sinon.stub().resolves()
     insertAdjustment = sinon.stub().resolves()
     stagingAdjustmentsMapper = {
       mapCmsAdjustments: sinon.stub(),
@@ -132,8 +160,10 @@ describe(relativeFilePath, function () {
       '../data/create-tasks': createNewTasks,
       '../staging-adjustments-mapper': stagingAdjustmentsMapper,
       '../data/get-app-adjustments-for-batch': getAppAdjustments,
+      '../data/get-app-gs-adjustments-for-batch': getAppGsAdjustments,
       '../data/update-adjustment-effective-to': updateAdjustmentEffectiveTo,
-      '../data/insert-adjustment': insertAdjustment
+      '../data/insert-adjustment': insertAdjustment,
+      '../data/update-adjustment-crn': updateAdjustmentCRN
     })
   })
 
@@ -141,11 +171,13 @@ describe(relativeFilePath, function () {
     stagingAdjustmentsMapper.mapCmsAdjustments.resolves([{id: 1}, {id: 2}, {id: 3}])
     stagingAdjustmentsMapper.mapGsAdjustments.resolves([])
     getAppAdjustments.resolves(adjustments)
+    getAppGsAdjustments.resolves(gsAdjustments)
 
     return adjustmentsWorker.execute(task).then(function () {
       expect(createNewTasks.called).to.be.equal(true)
       expect(stagingAdjustmentsMapper.mapCmsAdjustments.called).to.be.equal(true)
       expect(getAppAdjustments.called).to.be.equal(true)
+      expect(getAppGsAdjustments.called).to.be.equal(true)
       expect(updateAdjustmentEffectiveTo.called).to.be.equal(false)
       expect(insertAdjustment.called).to.be.equal(false)
     })
@@ -160,6 +192,7 @@ describe(relativeFilePath, function () {
     stagingAdjustmentsMapper.mapCmsAdjustments.resolves(cmsAdjustments)
     stagingAdjustmentsMapper.mapGsAdjustments.resolves([])
     getAppAdjustments.resolves(appAdjustments)
+    getAppGsAdjustments.resolves(gsAdjustments)
 
     return adjustmentsWorker.execute(task).then(function () {
       expect(createNewTasks.called).to.be.equal(true)
@@ -174,6 +207,7 @@ describe(relativeFilePath, function () {
     stagingAdjustmentsMapper.mapCmsAdjustments.resolves(cmsAdjustments)
     stagingAdjustmentsMapper.mapGsAdjustments.resolves([])
     getAppAdjustments.resolves([])
+    getAppGsAdjustments.resolves(gsAdjustments)
 
     return adjustmentsWorker.execute(task).then(function () {
       expect(createNewTasks.called).to.be.equal(true)
@@ -194,6 +228,7 @@ describe(relativeFilePath, function () {
     stagingAdjustmentsMapper.mapCmsAdjustments.resolves([])
     stagingAdjustmentsMapper.mapGsAdjustments.resolves([])
     getAppAdjustments.resolves(appAdjustments)
+    getAppGsAdjustments.resolves(gsAdjustments)
 
     return adjustmentsWorker.execute(task).then(function () {
       expect(createNewTasks.called).to.be.equal(true)
@@ -214,6 +249,7 @@ describe(relativeFilePath, function () {
     stagingAdjustmentsMapper.mapCmsAdjustments.resolves(cmsAdjustments)
     stagingAdjustmentsMapper.mapGsAdjustments.resolves([])
     getAppAdjustments.resolves(appAdjustments)
+    getAppGsAdjustments.resolves(gsAdjustments)
 
     return adjustmentsWorker.execute(task).then(function () {
       expect(createNewTasks.called).to.be.equal(true)
@@ -228,6 +264,7 @@ describe(relativeFilePath, function () {
     stagingAdjustmentsMapper.mapCmsAdjustments.resolves([])
     stagingAdjustmentsMapper.mapGsAdjustments.resolves(gsAdjustments)
     getAppAdjustments.resolves([])
+    getAppGsAdjustments.resolves(gsAdjustments)
 
     return adjustmentsWorker.execute(task).then(function () {
       expect(createNewTasks.called).to.be.equal(true)
@@ -247,6 +284,7 @@ describe(relativeFilePath, function () {
     stagingAdjustmentsMapper.mapCmsAdjustments.resolves([])
     stagingAdjustmentsMapper.mapGsAdjustments.resolves([])
     getAppAdjustments.resolves(appAdjustments)
+    getAppGsAdjustments.resolves(gsAdjustments)
 
     return adjustmentsWorker.execute(task).then(function () {
       expect(createNewTasks.called).to.be.equal(true)
@@ -268,6 +306,7 @@ describe(relativeFilePath, function () {
     stagingAdjustmentsMapper.mapCmsAdjustments.resolves(cmsAdjustments)
     stagingAdjustmentsMapper.mapGsAdjustments.resolves(gsAdjustments)
     getAppAdjustments.resolves(appAdjustments)
+    getAppGsAdjustments.resolves(gsAdjustments)
 
     return adjustmentsWorker.execute(task).then(function () {
       expect(createNewTasks.called).to.be.equal(true)
@@ -302,6 +341,26 @@ describe(relativeFilePath, function () {
     })
     .catch(function (err) {
       expect(err.message).to.eql('Test error')
+    })
+  })
+
+  it('should retrieve staging GS adjustments and update them in app when they exist in both the application and the extract', function () {
+    var appAdjustments = [
+      Object.assign({}, adjustmentRow, { id: 24, points: -6, contactId: gsContactId, workloadOwnerId: existingOmId, case_ref_no: null })
+    ]
+
+    stagingAdjustmentsMapper.mapCmsAdjustments.resolves([])
+    stagingAdjustmentsMapper.mapGsAdjustments.resolves(stgGsAdjustments)
+    getAppAdjustments.resolves(appAdjustments)
+    getAppGsAdjustments.resolves(gsAdjustments)
+
+    return adjustmentsWorker.execute(task).then(function () {
+      expect(createNewTasks.called).to.be.equal(true)
+      expect(stagingAdjustmentsMapper.mapCmsAdjustments.called).to.be.equal(true)
+      expect(stagingAdjustmentsMapper.mapGsAdjustments.called).to.be.equal(true)
+      expect(getAppAdjustments.called).to.be.equal(true)
+      expect(updateAdjustmentCRN.calledWith(appAdjustments[0].id, stgGsAdjustments[0].crn)).to.be.equal(true)
+      expect(insertAdjustment.called).to.be.equal(false)
     })
   })
 })
