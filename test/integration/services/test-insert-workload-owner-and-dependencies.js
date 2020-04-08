@@ -21,6 +21,7 @@ describe('app/services/insert-workload-owner-and-dependencies', function () {
   var regionId
   var lduId
   var workloadOwnerId
+  var lduCode
 
   it('should insert a new offender manager record', function (done) {
     omGradeCode = 'D'
