@@ -24,6 +24,9 @@ var formatCase = function (ldus, sentenceType) {
         thisCase.c2,
         thisCase.d1,
         thisCase.d2,
+        thisCase.e,
+        thisCase.f,
+        thisCase.g,
         thisCase.untiered,
         thisCase.totalCases
       ])
