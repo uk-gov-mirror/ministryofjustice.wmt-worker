@@ -15,6 +15,7 @@ module.exports = function (range) {
     .then(function (results) {
       if (results !== 'undefined' && results.length > 0) {
         return Promise.each(results, function (result) {
+          // WMT0200 Add extra tiers here
           return getArmsTotals(result['om_key'], result['team_code']).then(function (armsCases) {
             var communityTiers = new Tiers(
               locations.COMMUNITY,

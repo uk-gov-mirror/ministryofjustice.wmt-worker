@@ -18,18 +18,21 @@ module.exports = function (initialId, maxId, batchSize, workloadReportId) {
         }
         if (tempWorkloads[index] === undefined) {
           tempWorkloads[index] = {
+            // WMT0200 Add extra tiers here
             // WMT0160: Increase Size of all Arrays to 11
             COMMUNITY: new Array(11),
             LICENSE: new Array(11),
             CUSTODY: new Array(11)
           }
           tempWorkloads[index].T2A = {
+            // WMT0200 Add extra tiers here
             // WMT0160: Increase Size of all Arrays to 11
             COMMUNITY: new Array(11),
             LICENSE: new Array(11),
             CUSTODY: new Array(11)
           }
           tempWorkloads[index].filtered = {
+            // WMT0200 Add extra tiers here
             COMMUNITY: new Array(11),
             LICENSE: new Array(11),
             CUSTODY: new Array(11)
