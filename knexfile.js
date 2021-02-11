@@ -20,12 +20,25 @@ module.exports = {
     client: 'mssql',
     connection: Object.assign({}, defaultConnection, {
       user: config.MIGRATION_STG_DATABASE_USERNAME,
-      password: config.MIGRATION_STG_DATABASE_PASSWORD
+      password: config.MIGRATION_STG_DATABASE_PASSWORD,
+      options: {
+        encrypt: true,
+        requestTimeout: 300000,
+        connectionTimeout: 300000,
+        enableArithAbort: true
+      }
     }),
     migrations: {
       directory: 'migrations/staging'
     },
-    debug: false
+    debug: true,
+    pool: {
+      min: 0,
+      max: 600
+    },
+    acquireConnectionTimeout: 300000,
+    requestTimeout: 300000,
+    connectionTimeout: 300000
   },
   app: {
     client: 'mssql',
